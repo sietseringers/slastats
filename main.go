@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"net/http"
 	"os"
 	"sort"
 	"time"
@@ -15,8 +14,8 @@ type times map[string]time.Duration
 
 func main() {
 	if len(os.Args) != 4 {
-		fmt.Println("Usage:   slastats <url> <start> <end>")
-		fmt.Println("Example: slastats http://example.com/example.ics 2020-01-01 2020-12-31")
+		fmt.Println("Usage:   slastats <file> <start> <end>")
+		fmt.Println("Example: slastats file.ics 2020-01-01 2020-12-31")
 		os.Exit(0)
 	}
 
@@ -52,12 +51,12 @@ func parseTimeRange(startstring, endstring string) (time.Time, time.Time, error)
 }
 
 func getCal(url string) (*gocal.Gocal, error) {
-	body, err := http.Get(url)
+	file, err := os.Open(url)
 	if err != nil {
-		return nil, fmt.Errorf("failed to GET iCal feed: %w", err)
+		return nil, fmt.Errorf("failed to read calendar file: %w", err)
 	}
 
-	c := gocal.NewParser(body.Body)
+	c := gocal.NewParser(file)
 	c.SkipBounds = true
 	if c.Parse() != nil {
 		return nil, fmt.Errorf("failed to parse iCal feed: %w", err)
