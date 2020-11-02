@@ -76,8 +76,10 @@ func process(cal *gocal.Gocal, start, end time.Time) {
 	inside, outside, first, last := aggregate(cal, start, end)
 
 	keys := sortKeys(inside)
+	fmt.Println("    name: 9-17, 17-9")
+	fmt.Println()
 	for _, name := range keys {
-		fmt.Printf("%8v: %.0f, %.0f\n", name, inside[name].Hours(), outside[name].Hours())
+		fmt.Printf("%8v: %4.0f, %4.0f\n", name, inside[name].Hours(), outside[name].Hours())
 	}
 
 	fmt.Println()
