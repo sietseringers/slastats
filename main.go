@@ -13,16 +13,23 @@ import (
 type times map[string]time.Duration
 
 func main() {
-	if len(os.Args) != 4 {
-		fmt.Println("Usage:   slastats <file> <start> <end>")
+	if len(os.Args) != 2 && len(os.Args) != 4 {
+		fmt.Println("Usage:   slastats <file> [<start> <end>]")
+		fmt.Println("Example: slastats file.ics")
 		fmt.Println("Example: slastats file.ics 2020-01-01 2020-12-31")
 		os.Exit(0)
 	}
 
-	start, end, err := parseTimeRange(os.Args[2], os.Args[3])
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	var start, end time.Time
+	var err error
+	if len(os.Args) == 2 {
+		end = time.Date(3000, 0, 0, 0, 0, 0, 0, time.UTC)
+	} else {
+		start, end, err = parseTimeRange(os.Args[2], os.Args[3])
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 	}
 
 	cal, err := getCal(os.Args[1])
@@ -50,8 +57,8 @@ func parseTimeRange(startstring, endstring string) (time.Time, time.Time, error)
 	return start, end, nil
 }
 
-func getCal(url string) (*gocal.Gocal, error) {
-	file, err := os.Open(url)
+func getCal(path string) (*gocal.Gocal, error) {
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read calendar file: %w", err)
 	}
